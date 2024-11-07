@@ -53,6 +53,7 @@ export async function POST(req, res) {
   }
 
   try {
+    let total_sent = 0;
     for (let i = 0; i < email_info.length; i++) { 
       const trackingId = uuidv4();
       const trackingImg = `<img src="${process.env.BASE_URL}/api/track?trackingId=${trackingId}" width="1" height="1" alt="" style="display:inline;" />`;
@@ -70,10 +71,11 @@ export async function POST(req, res) {
       await transporter.sendMail(mailOptions);
 
 
-      await sql`INSERT INTO email_tracking (department_code, batch_id, tracking_id, recipient_email, subject) VALUES (${department}, ${batchId}, ${trackingId}, ${email_info[i].email}, ${email_info[i].subject})`;
+      await sql`INSERT INTO email_tracking (department_code, batch_id, tracking_id, recipient_email, subject) VALUES (${email_info[i].department}, ${batchId}, ${trackingId}, ${email_info[i].email}, ${email_info[i].subject})`;
+      total_sent++;
     }
     return new Response(
-      JSON.stringify({ message: "Emails sent successfully" }),
+      JSON.stringify({ message: `${total_sent} emails sent to ${department} deparment` }),
       { status: 200 }
     );
   } catch (error) {
