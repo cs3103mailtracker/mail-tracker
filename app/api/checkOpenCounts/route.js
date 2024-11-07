@@ -7,23 +7,27 @@ export async function GET() {
             method: 'GET',
         });
       
-          // Parse the response as JSON
+        // Parse the response as JSON
         const tracker_data = await response.json();
 
-        // const { rows } = await sql`SELECT * FROM email_tracking;`;
         const report = {};
         for (const record of tracker_data) {
+            // Record new department_code
             if (!report.hasOwnProperty(record['department_code'])) {
                 report[record['department_code']] = {
                     email_count: 0,
                     batch_opened: {}
                 };
             }
+
+            // current_obj is recording information for a depertment_code
             const current_obj = report[record['department_code']]
+            // As long as the current email belongs to this department, email_count plus one
+            current_obj.email_count += 1
     
             if (!current_obj.batch_opened.hasOwnProperty(record['batch_id'])) {
                 current_obj.batch_opened[record['batch_id']] = {"subject": record['subject'], open_times: 0}
-                current_obj.email_count += 1
+                // current_obj.email_count += 1
             }
             current_obj.batch_opened[record['batch_id']].open_times += record['count']
         }

@@ -50,43 +50,46 @@ export default function SmartMailer() {
     }
   };
 
-  // Handler for checking email open counts
-  const handleCheckOpenCounts = async () => {
-    logMessage('Checking email open counts...');
+// Handler for checking email open counts 
+const handleCheckOpenCounts = async () => { 
+  logMessage('Checking email open counts...'); 
 
-    const response = await fetch('/api/checkOpenCounts', {
-      method: 'GET',
-    });
+  const response = await fetch('/api/checkOpenCounts', { 
+    method: 'GET', 
+  }); 
 
-    if (response.ok) {
-      const openCounts = await response.json();
-      console.log(await response)
+  if (response.ok) { 
+    const openCounts = await response.json(); 
+    console.log(await response) 
 
-      // Print out the report about the number of emails have been sent
-      logMessage("-----------------------------------\nDepartment\t\tNumber of emails");
-      Object.keys(openCounts).forEach((entry) => {
-        logMessage(`${entry}\t\t\t\t${openCounts[entry].email_count}`);
-      });
+    // Print out the report about the number of emails have been sent 
+    logMessage("-----------------------------------\nDepartment\t\tNumber of emails"); 
+    let total = 0 
+    Object.keys(openCounts).forEach((entry) => { 
+      logMessage(`${entry}\t\t\t\t${openCounts[entry].email_count}`); 
+      total += openCounts[entry].email_count 
+    }); 
+    logMessage(`total\t\t\t\t${total}`); 
 
-      // Print out the report of the viewed times of each email batch
-      logMessage("-----------------------------------\nDepartment\t\tSubject\t\tOpen times");
-      Object.keys(openCounts).forEach((entry) => {
-        let first_flag = 1
-        Object.keys(openCounts[entry].batch_opened).forEach((batch) => {
-          const current_b = openCounts[entry].batch_opened[batch]
-          if(first_flag==1){
-            logMessage(`${entry}\t\t\t\t${current_b['subject']}\t\t\t${current_b['open_times']}`)
-          }
-          else{
-            logMessage(`\t\t\t\t${current_b['subject']}\t\t\t${current_b['open_times']}`)
-          }
-          first_flag = 0
-        })
-      });
-    } else {
-      logMessage('Failed to retrieve open counts.');
-    }
-  };
+    // Print out the report of the viewed times of each email batch 
+    logMessage("-----------------------------------\nDepartment\t\tSubject\t\tOpen times"); 
+    Object.keys(openCounts).forEach((entry) => { 
+      let first_flag = 1 
+      Object.keys(openCounts[entry].batch_opened).forEach((batch) => { 
+        const current_b = openCounts[entry].batch_opened[batch] 
+        if(first_flag==1){ 
+          logMessage(`${entry}\t\t\t\t${current_b['subject']}\t\t\t${current_b['open_times']}`) 
+        } 
+        else{ 
+          logMessage(`\t\t\t\t${current_b['subject']}\t\t\t${current_b['open_times']}`) 
+        } 
+        first_flag = 0 
+      }) 
+    }); 
+  } else { 
+    logMessage('Failed to retrieve open counts.'); 
+  } 
+};
 
   return (
     <div className="smart-mailer" style={{ backgroundColor: '#AEDFF7' }}>
